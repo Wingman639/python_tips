@@ -1,4 +1,3 @@
-#!/usr/bin/python2.5
 # -*- coding: utf-8 -*-#
 import struct
 import os
@@ -52,6 +51,43 @@ def main():
         if Pcap_check(f):
             reult = Pcap_read(f)
             print reult
+
+
+'''
+---------------------
+Cap File Head
+---------------------
+struct pcap_file_header {
+    bpf_u_int32     magic;
+    u_short         version_major;
+    u_short         version_minor;
+    bpf_int32       thiszone;       /* gmt to local correction */
+    bpf_u_int32     sigfigs;        /* accuracy of timestamps */
+    bpf_u_int32     snaplen;        /* max length saved portion of each pkt */
+    bpf_u_int32     linktype;       /* data link type (LINKTYPE_*) */
+};
+
+
+---------------------
+Frame Head
+---------------------
+struct pcap_pkthdr {
+    struct timeval  ts;             /* time stamp */
+    bpf_u_int32     caplen;         /* length of portion present */
+    bpf_u_int32     len;            /* length this packet (off wire) */
+};
+
+
+---------------------
+Ethernet Packet Head
+---------------------
+struct EthernetPacket
+{
+    char            MacDst[6];       ///< 目的网卡物理地址
+    char            MacSrc[6];       ///< 源网卡物理地址
+    unsigned short  PacketType;      ///< 包类型， ip或ARP等,  PacketType=0x0008是IP包，PacketType=0x0608是ARP包
+};
+'''
 
 
 if __name__ == '__main__':
