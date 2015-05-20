@@ -40,8 +40,15 @@ def _convert_to_cap_format(hex_str, convert_f):
             convert_f.write(bytes)
     
 
-def main():
-    _convert_file_to_wireshark_format('eth.log')
 
 if __name__ == '__main__':
+
+    import sys
+
+    def main():
+        file_name = 'eth.log'
+        if len(sys.argv) == 2:
+            file_name = sys.argv[1].strip()
+        _convert_file_to_wireshark_format(file_name)
+
     main()
