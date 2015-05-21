@@ -19,6 +19,7 @@ class TransTCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall(self.data.upper())
 
 
+
 class OamTCPHandler(SocketServer.BaseRequestHandler):
     """
     The RequestHandler class for our server.
@@ -36,14 +37,18 @@ class OamTCPHandler(SocketServer.BaseRequestHandler):
         # just send back the same data, but upper-cased
         self.request.sendall(self.data.upper())
 
-def start_server(port):
+def start_server(para_dict):
     HOST = "0.0.0.0"
-    server = SocketServer.TCPServer((HOST, port), TransTCPHandler)
+    port = para_dict['port']
+    handler_class = para_dict['handler_class']
+    server = SocketServer.TCPServer((HOST, port), handler_class)
     server.serve_forever()
 
 if __name__ == "__main__":
     pool = ThreadPool(3)
-    ports = [9999, 9001, 9002]
+    ports = [{'port':9999, 'handler_class':OamTCPHandler}, 
+            {'port':9001, 'handler_class':TransTCPHandler},
+            {'port':9002, 'handler_class':TransTCPHandler},]
     pool.map(start_server, ports)
     pool.close()
     pool.join()
