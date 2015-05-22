@@ -1,5 +1,5 @@
 import SocketServer
-import thread
+from multiprocessing.dummy import Pool as ThreadPool
 
 class TransTCPHandler(SocketServer.BaseRequestHandler):
     """
@@ -37,27 +37,22 @@ class OamTCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall(self.data.upper())
         
 
-def new_server(para_dict):
+def start_server(para_dict):
     HOST = "0.0.0.0"
     port = para_dict['port']
     handler_class = para_dict['handler_class']
     server = SocketServer.TCPServer((HOST, port), handler_class)
-    return server
-    
+    para_dict['server'] = server
+    server.serve_forever()
 
 if __name__ == "__main__":
     pool = ThreadPool(3)
-    ports = { 
-             '9001' : {'port':9001, 'handler_class':TransTCPHandler, 'server':None},
-             '9002' : {'port':9002, 'handler_class':TransTCPHandler, 'server':None},
-            }
-    oam_server = new_server({'port':9999, 'handler_class':OamTCPHandler})
-    thread.start_new_thread(oam_server.serve_forever)
-    for port_dict in ports.values():
-        server = new_server(port_dict)
-        port_dict['server'] = server
-        server_thread = thread.start_new_thread(server.serve_forever)
-    
+    ports = [{'port':9999, 'handler_class':OamTCPHandler}, 
+            {'port':9001, 'handler_class':TransTCPHandler},
+            {'port':9002, 'handler_class':TransTCPHandler},]
+    pool.map(start_server, ports)
+    pool.close()
+    pool.join()
 
 
 
