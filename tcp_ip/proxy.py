@@ -46,17 +46,16 @@ def new_server(para_dict):
     
 
 if __name__ == "__main__":
-    pool = ThreadPool(3)
     ports = { 
              '9001' : {'port':9001, 'handler_class':TransTCPHandler, 'server':None},
              '9002' : {'port':9002, 'handler_class':TransTCPHandler, 'server':None},
             }
     oam_server = new_server({'port':9999, 'handler_class':OamTCPHandler})
-    thread.start_new_thread(oam_server.serve_forever)
+    thread.start_new_thread(oam_server.serve_forever, ())
     for port_dict in ports.values():
         server = new_server(port_dict)
         port_dict['server'] = server
-        server_thread = thread.start_new_thread(server.serve_forever)
+        server_thread = thread.start_new_thread(server.serve_forever, ())
     
 
 
