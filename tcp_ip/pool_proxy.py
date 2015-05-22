@@ -1,6 +1,8 @@
 import SocketServer
 from multiprocessing.dummy import Pool as ThreadPool
 
+
+
 class TransTCPHandler(SocketServer.BaseRequestHandler):
     """
     The RequestHandler class for our server.
@@ -35,6 +37,23 @@ class OamTCPHandler(SocketServer.BaseRequestHandler):
         print self.data
         # just send back the same data, but upper-cased
         self.request.sendall(self.data.upper())
+
+        try:
+            self.cmd_handle(self.data)
+        except:
+            pass
+
+    def cmd_handle(self, data):
+        if not data: return
+        cmds = data.split()
+        if cmds == ['show', 'servers']:
+            print g_servers
+        elif cmds[0] == 'stop':
+            port = int(cmds[1])
+            server = g_servers[port]
+            server.shutdown()
+            server.server_close()
+
         
 
 def new_server(port, handler_class):
@@ -46,20 +65,26 @@ def new_server(port, handler_class):
 def start_server(server):
     server.serve_forever()
 
-if __name__ == "__main__":
-    pool = ThreadPool(3)
-    ports = [{'port':9999, 'handler_class':OamTCPHandler}, 
-            {'port':9001, 'handler_class':TransTCPHandler},
-            {'port':9002, 'handler_class':TransTCPHandler},]
 
-    servers = {}
-    for port_dict in ports:
+g_ports = [{'port':9999, 'handler_class':OamTCPHandler}, 
+        {'port':9001, 'handler_class':TransTCPHandler},
+        {'port':9002, 'handler_class':TransTCPHandler},]
+
+g_servers = {}
+
+if __name__ == "__main__":
+
+    for port_dict in g_ports:
         port = port_dict['port']
         handler_class = port_dict['handler_class']
-        servers[port] = new_server(port, handler_class)
+        g_servers[port] = new_server(port, handler_class)
 
+    print g_servers
+    oam_server = g_servers[9999]
+    print dir(oam_server)
 
-    pool.map(start_server, servers.values())
+    pool = ThreadPool(3)
+    pool.map(start_server, g_servers.values())
     pool.close()
     pool.join()
 
