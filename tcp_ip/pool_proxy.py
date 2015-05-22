@@ -37,12 +37,13 @@ class OamTCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall(self.data.upper())
         
 
-def start_server(para_dict):
+def new_server(port, handler_class):
     HOST = "0.0.0.0"
-    port = para_dict['port']
-    handler_class = para_dict['handler_class']
     server = SocketServer.TCPServer((HOST, port), handler_class)
-    para_dict['server'] = server
+    return server
+    
+
+def start_server(server):
     server.serve_forever()
 
 if __name__ == "__main__":
@@ -50,7 +51,15 @@ if __name__ == "__main__":
     ports = [{'port':9999, 'handler_class':OamTCPHandler}, 
             {'port':9001, 'handler_class':TransTCPHandler},
             {'port':9002, 'handler_class':TransTCPHandler},]
-    pool.map(start_server, ports)
+
+    servers = {}
+    for port_dict in ports:
+        port = port_dict['port']
+        handler_class = port_dict['handler_class']
+        servers[port] = new_server(port, handler_class)
+
+
+    pool.map(start_server, servers.values())
     pool.close()
     pool.join()
 
