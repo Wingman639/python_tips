@@ -50,6 +50,7 @@ class OamTCPHandler(SocketServer.BaseRequestHandler):
             print g_servers
         elif cmds[0] == 'stop':
             port = int(cmds[1])
+            print 'shutdown server of port ', port
             server = g_servers[port]
             server.shutdown()
             server.server_close()
