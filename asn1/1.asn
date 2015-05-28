@@ -1,0 +1,11 @@
+CarrierInfo ::= OCTET STRING (SIZE(2..3))
+ChargeAreaCode ::= OCTET STRING (SIZE(3))
+ChargeInformation ::= OCTET STRING (SIZE(2..33))
+ChargedParty ::= ENUMERATED
+
+ (chargingOfCallingSubscriber  (0),
+  chargingOfCalledSubscriber   (1),
+  noCharging                   (2))
+ChargingOrigin ::= OCTET STRING (SIZE(1))
+Counter ::= OCTET STRING (SIZE(1..4))
+Date ::= OCTET STRING (SIZE(3..4))

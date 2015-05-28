@@ -1,0 +1,14 @@
+ConnectionEstablishedIndication    ::= SEQUENCE {
+message    [0]        MessageFields,
+userName [1]            OCTET STRING OPTIONAL,
+password [2]            OCTET STRING OPTIONAL,
+interfaceVersion [3]        InterfaceVersion OPTIONAL,
+buildId        [4]    OCTET STRING OPTIONAL,
+targetId    [5]        OCTET STRING OPTIONAL,
+neType        [6]    NeType OPTIONAL,    
+neSwVersion     [7]    OCTET STRING OPTIONAL,
+restartReason    [8]    OCTET STRING OPTIONAL, 
+neCommissioned    [9]    BOOLEAN OPTIONAL,
+roleOfOMS        [10]    RoleOfOMS OPTIONAL, 
+sharingState    [11]    OCTET STRING OPTIONAL 
+}
