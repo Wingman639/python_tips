@@ -17,7 +17,9 @@ kw2 = test_case.keywords.create('log', args=['this is my first robot python case
 result = suite.run(critical='smoke', dryrun = 'dryrun',output='skynet.xml')
 '''
 <class 'robot.result.executionresult.Result'>
-['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_stat_config', '_status_rc', 'configure', 'errors', 'generated_by_robot', 'handle_suite_teardown_failures', 'return_code', 'save', 'source', 'statistics', 'suite', 'visit']
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', 
+'__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 
+'_stat_config', '_status_rc', 'configure', 'errors', 'generated_by_robot', 'handle_suite_teardown_failures', 'return_code', 'save', 'source', 'statistics', 'suite', 'visit']
 '''
 
 #result = suite.run()
@@ -47,6 +49,8 @@ ResultWriter(result).write_results(report='report.html', log='log.html')
 
 results = Results(None, result)
 '''
-['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_js_result', '_prune', '_result', '_settings', '_sources', 'js_result', 'result', 'return_code']
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', 
+'__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 
+'_js_result', '_prune', '_result', '_settings', '_sources', 'js_result', 'result', 'return_code']
 '''
 print results.js_result
