@@ -1,14 +1,27 @@
 
 import re
 
+def get_procedure_list(text):
+	lines = get_procedure_name_lines(text)
+	name_list = procedure_names_from_lines(lines)
+	procedure_dict = procedures_with_names(text, name_list)
+	return procedure_dict
+
+def get_input_list(text):
+	lines = get_input_signal_name_lists(text)
+	name_list = input_signal_names_from_lines(lines)
+	input_signal_dict = input_signals_with_names(text, name_list)
+	return input_signal_dict
+
+
+### PROCEDURE part
 
 def procedures_with_names(text, procedure_names):
-	procedure_list = []
+	procedure_dict = {}
 	for name in procedure_names:
-		procedure = procedure_text_with_name(text, name)
-		if procedure:
-			procedure_list.append(procedure)
-	return procedure_list
+		procedure = procedure_text_with_name(text, name)		
+		procedure_dict[name] = procedure
+	return procedure_dict
 
 def procedure_text_with_name(text, procedure_name):
 	pattern_str = r'\sPROCEDURE\s+{procedure_name}\s*;.*?ENDPROCEDURE\s+{procedure_name}\s*;'
@@ -27,10 +40,10 @@ def procedure_names_from_lines(lines):
 	return names
 
 def procedure_name_from_line(line):
-	return line.replace('PROCEDURE', '').strip('\n\r\t\f\v ;')
+	return line.replace('PROCEDURE', '').strip('\n\r\t\f\v ;').split()[0]
 
 def get_procedure_name_lines(text):
-	pattern_str = r'\sPROCEDURE\s.*?;'
+	pattern_str = r'\sPROCEDURE[\s\w]*?;'
 	return findall_with_pattern_str(pattern_str, text)
 
 
@@ -38,12 +51,11 @@ def get_procedure_name_lines(text):
 ### INPUT signal part
 
 def input_signals_with_names(text, signal_names):
-	input_signal_list = []
+	input_signal_dict = {}
 	for name in signal_names:
 		input_signal_text = input_signal_text_with_name(text, name)
-		if input_signal_text:
-			input_signal_list.append(input_signal_text)
-	return input_signal_list
+		input_signal_dict[name] = input_signal_text
+	return input_signal_dict
 
 def input_signal_text_with_name(text, signal_name):
 	pattern_str = r'{signal_name}.*?(?=INPUT|ENDSTATE)'
@@ -66,11 +78,15 @@ def input_signal_name_from_line(line):
 	return line.strip('\n\r\t\f\v ();')
 
 def get_input_signal_name_lists(text):
-	pattern_str = r'\sINPUT\s.*?[(;]'
+	pattern_str = r'\sINPUT[\s\w]*?[(;]'
 	return findall_with_pattern_str(pattern_str, text)
 	
 
 
+## is called
+def is_procedure_called_in_code(procedure_name, text):
+	pattern_str = r'\s(TASK|CALL|DECISION)[\s(]+.*?{name}(?!\w)'.format(name=procedure_name)
+	return is_match_with_pattern_str(pattern_str, text)
 
 
 ## find all in text
@@ -83,6 +99,11 @@ def findall_with_pattern_str(pattern_str, text):
 	else:
 		return []
 
+def is_match_with_pattern_str(pattern_str, text):
+	pattern = re.compile(pattern_str, re.M|re.S)
+	match = pattern.search(text)
+	return bool(match)
+
 
 if __name__ == '__main__':
 
@@ -92,12 +113,8 @@ if __name__ == '__main__':
 PROCEDURE query_cosit_stat_from_rak__r;
 DCL
   raktor_pid   pid := NULL;
-
 START;
-
   TASK raktor_pid := get_service_provider__r(raktor_p);
-
-
 ENDPROCEDURE query_cosit_stat_from_rak__r;
 #endif
 
@@ -111,7 +128,7 @@ PROCEDURE c_test_hand_table__r;
 FPAR
    IN VIEWED sub_id   byte;
 START;
-  DECISION ( sub_id );
+  DECISION get_sub_id();
   (mt_switch__t_dump_c):
 	CALL send_dump_req__r();
   ENDDECISION;
@@ -181,23 +198,45 @@ ENDSTATE working;
 		lines = get_procedure_name_lines(text)
 		procedure_name_list = procedure_names_from_lines(lines)
 		print procedure_name_list
-		procedure_list = procedures_with_names(text, procedure_name_list)
-		print_list(procedure_list)
+		procedures = procedures_with_names(text, procedure_name_list)
+		print procedures
 
 	def test_input_list():
 		lines = get_input_signal_name_lists(text)
 		name_list = input_signal_names_from_lines(lines)
 		print name_list
 		#print input_signal_text_with_name(text, 'INPUT rnw_param_wait_timer')
-		input_signal_list = input_signals_with_names(text, name_list)
-		print_list(input_signal_list)
+		input_signals = input_signals_with_names(text, name_list)
+		print input_signals
+
+	def test_get_procedure_list():
+		procedures = get_procedure_list(text)
+		print_dict(procedures)
+
+	def test_get_input_list():
+		inputs = get_input_list(text)
+		print_dict(inputs)
+
+	def test_is_procedure_called_in_code():
+		print is_procedure_called_in_code('get_service_provider__r', text)
+		print is_procedure_called_in_code('get_sub_id', text)
+		print is_procedure_called_in_code('send_dump_req__r', text)
+		
+
 
 	def print_list(a_list):
 		print '[' + '\n,\n'.join(a_list) + ']'
 
+	def print_dict(a_dict):
+		for k, v in a_dict.items():
+			print k, v
+
 	def test():
-		test_procedure_list()
-		test_input_list()
+		#test_procedure_list()
+		#test_input_list()
+		#test_get_procedure_list()
+		#test_get_input_list()
+		test_is_procedure_called_in_code()
 	
 
 
