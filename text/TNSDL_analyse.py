@@ -16,12 +16,11 @@ def fill_access_chain(functions):
 		print chain
 
 
-
-def access_chains_with_procedure(chain, functions):
+def access_chains_with_block_dict(chain, block_dict):
 	if not chain: return
 	chain_list = []
 	procedure_name = chain[-1]
-	for proc_name, procedure in functions['procedures'].items():
+	for proc_name, procedure in block_dict.items():
 		if procedure_name == proc_name: continue
 		if tnsdl.is_procedure_called_in_code(procedure_name, procedure):
 			new_list = chain + [proc_name]
@@ -31,18 +30,20 @@ def access_chains_with_procedure(chain, functions):
 	return chain_list
 
 
-def access_chains_with_level(procedure_name, level, functions):
+
+
+def access_chains_with_level(procedure_name, level, block_dict):
 	level = int(level)
-	chains = access_chains_with_procedure([procedure_name], functions)
+	chains = access_chains_with_block_dict([procedure_name], block_dict)
 	for i in xrange(level - 1):
-		chains = expend_chains_one_more_level(chains, functions)
+		chains = expend_chains_one_more_level(chains, block_dict)
 	return chains
 
 
-def expend_chains_one_more_level(chains, functions):
+def expend_chains_one_more_level(chains, block_dict):
 	new_chains = []	
 	for chain in chains:
-		new_chains += access_chains_with_procedure(chain, functions)
+		new_chains += access_chains_with_block_dict(chain, block_dict)
 	return new_chains
 
 
@@ -55,14 +56,14 @@ if __name__ == '__main__':
 	import unittest
 
 	class FunctionTestCase(unittest.TestCase):
-		def test_access_chains_with_procedure_not_find(self):
+		def test_access_chains_with_block_dict_not_find(self):
 			expected = [['a', 'b']]
-			result = access_chains_with_procedure(['a', 'b'], {'procedures':{}})
+			result = access_chains_with_block_dict(['a', 'b'], {})
 			self.assertEqual(expected, result)
 
-		def test_access_chains_with_procedure(self):
+		def test_access_chains_with_block_dict(self):
 			expected = [['a', 'b', 'c']]
-			result = access_chains_with_procedure(['a', 'b'], {'procedures':{'c':'\nCALL b()'}})
+			result = access_chains_with_block_dict(['a', 'b'], {'c':'\nCALL b()'})
 			self.assertEqual(expected, result)
 
 
@@ -74,15 +75,16 @@ if __name__ == '__main__':
 		#print functions['procedures'].keys()
 		#print functions['inputs'].keys()
 		print len(functions['procedures']), len(functions['inputs'])
-		#print access_chains_with_procedure(['send_cell_barred__r'], functions)
-		chains = access_chains_with_level('send_cell_barred__r', 3, functions)
+		#print access_chains_with_block_dict(['send_cell_barred__r'], functions['procedures'])
+		chains = access_chains_with_level('send_cell_barred__r', 3, functions['procedures'])
 		print_list(chains)
 		#chains = [['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_fail__r'], ['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_ready__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'handle_rez_cell_shd__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'check_scen_after_hspa_rem__r']]
 		#print expend_chains_one_more_level(chains, functions)
 
 	def access_chains(proc_name, level, file_name):
 		functions = try_to_get_functions(file_name)
-		chains = access_chains_with_level(proc_name, level, functions)
+		chains = access_chains_with_level(proc_name, level, functions['procedures'])
+		chains = expend_chains_one_more_level(chains, functions['inputs'])
 		return chains
 
 
@@ -110,7 +112,7 @@ if __name__ == '__main__':
 	def main():
 		file_name = 'rezha1qx.sdl'
 		proc_name = 'send_cell_barred__r'
-		level = 3
+		level = 5
 		chains = access_chains(proc_name, level, file_name)
 		print_list(chains)
 
