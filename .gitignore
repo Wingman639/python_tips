@@ -1,3 +1,4 @@
+*.data
 *.sdl
 *.txt
 *.cap

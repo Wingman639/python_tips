@@ -16,10 +16,6 @@ def fill_access_chain(functions):
 		print chain
 
 
-def get_access_chain_with_signal(signal_name, signal, functions):
-	chain = {}
-	accessed_functions = functions_in_signal(signal)
-	return chain
 
 def access_chain_with_procedure(procedure_name, functions):
 	chains = []
@@ -36,13 +32,29 @@ def read_tnsdl_file(file_name):
 	return text
 
 if __name__ == '__main__':
+	import save_data
+
 	def test():
 		pass
 
+	def try_to_get_functions(file_name):
+		data_file_name = file_name + '.data'
+		functions = save_data.load_from_file(data_file_name)
+		if functions: return functions
+		return functions_from_source_file(file_name)
 
-	def main():
+
+	def functions_from_source_file(file_name):
 		text = read_tnsdl_file('rezha1qx.sdl')
 		functions = get_functions(text)
+		data_file_name = file_name + '.data'
+		save_data.save_to_file(functions, data_file_name)
+		return functions
+
+
+	def main():
+		functions = try_to_get_functions('rezha1qx.sdl')
+		if not functions: return
 		#print functions['procedures'].keys()
 		#print functions['inputs'].keys()
 		print len(functions['procedures']), len(functions['inputs'])
