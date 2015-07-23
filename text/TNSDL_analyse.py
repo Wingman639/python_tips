@@ -2,6 +2,37 @@
 import TNSDL_function_reader as tnsdl
 
 
+#============================#
+# From Top to Bottom
+
+def access_flow_with_input(signal_name, functions, level):
+	flow = {}
+	signal_code = functions['inputs'][signal_name]
+	flow[signal_name] = access_flow_with_proc_name(signal_code, functions['procedures'], level)
+	return flow
+
+
+def access_flow_with_proc_name(code, procedures_dict, level):
+	if level <= 0: return
+	flow = {}
+	if not code: return
+	called_list = tnsdl.get_called_functions(code)
+	if not called_list: return
+
+	for called_name in called_list:
+		if not called_name: continue
+		if called_name not in procedures_dict:
+			if called_name not in flow: 
+				flow[called_name] = None
+			continue
+		code = procedures_dict[called_name]
+		flow[called_name] = access_flow_with_proc_name(code, procedures_dict, level-1)
+
+	return flow
+
+
+#============================#
+# From Bottom to Top
 
 def get_functions(text):
 	functions = {}
@@ -76,14 +107,16 @@ if __name__ == '__main__':
 	def test():		
 		functions = try_to_get_functions('rezha1qx.sdl')
 		if not functions: return
-		print_list(functions['procedures'].keys())
-		print_list(functions['inputs'].keys())
+		#print_list(functions['procedures'].keys())
+		#print_list(functions['inputs'].keys())
 		print len(functions['procedures']), len(functions['inputs'])
 		#print access_chains_with_block_dict(['send_cell_barred__r'], functions['procedures'])
 		#chains = access_chains_with_level('send_cell_barred__r', 3, functions['procedures'])
 		#print_list(chains)
 		#chains = [['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_fail__r'], ['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_ready__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'handle_rez_cell_shd__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'check_scen_after_hspa_rem__r']]
 		#print expend_chains_one_more_level(chains, functions)
+		print access_flow_with_proc_name(functions['procedures']['send_cell_barred__r'], functions['procedures'], 5)
+		print functions['procedures']['send_cell_barred__r']
 
 	def access_chains(proc_name, level, file_name):
 		functions = try_to_get_functions(file_name)
@@ -135,12 +168,29 @@ if __name__ == '__main__':
 		print '\n\n'
 		print_function_with_count(functions['inputs'])
 
+	def show_input(file_name, signal_name, level):
+		functions = try_to_get_functions(file_name)
+		flow = access_flow_with_input(signal_name, functions, level)
+		print_flow(flow)
+
+
+
+	def print_flow(flow, level=0):
+		if not flow: return
+		for k, v in flow.items():
+			print space_str(4*level) + str(k)
+			print_flow(v, level+1)
+
+
 
 	def main():
 		file_name = 'rezha1qx.sdl'
 		proc_name = 'init_wcel_data__r'
 		#show_chains(file_name, proc_name)
-		show_functions(file_name)
+		#show_functions(file_name)
+		input_signal = 'INPUT hsdpa_activation_timer'
+		show_input(file_name, input_signal, level=10)
+
 
 
 

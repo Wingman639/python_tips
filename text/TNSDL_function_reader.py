@@ -82,6 +82,11 @@ def get_input_signal_name_lists(text):
 	return findall_with_pattern_str(pattern_str, text)
 	
 
+def get_called_functions(text):
+	pattern_str = r'\s(?:TASK|CALL|DECISION|:=|OUTPUT)[\s(]+(\w*)\s*[\(]'
+	return findall_with_pattern_str(pattern_str, text)
+
+
 
 ## is called
 def is_procedure_called_in_code(procedure_name, text):
@@ -189,6 +194,7 @@ DCL
 
   CALL c_test_hand_table__r(l_cell_list, alarm_state_t_start_c);
 
+  OUTPUT send_cell_barred_info_s(msg_b93b_data) TO w_wcel_map(l_index).cell_info.cell_local.rra_cma_pid;
   NEXTSTATE -;
 
 ENDSTATE working;
@@ -221,6 +227,10 @@ ENDSTATE working;
 		print is_procedure_called_in_code('get_service_provider__r', text)
 		print is_procedure_called_in_code('get_sub_id', text)
 		print is_procedure_called_in_code('send_dump_req__r', text)
+
+	def test_get_called_functions():
+		expected = ['get_service_provider__r', 'get_sub_id', 'send_dump_req__r', 'query_cosit_stat_from_rak__r', 'c_test_hand_table__r']
+		print get_called_functions(text)
 		
 
 
@@ -236,7 +246,8 @@ ENDSTATE working;
 		#test_input_list()
 		#test_get_procedure_list()
 		#test_get_input_list()
-		test_is_procedure_called_in_code()
+		#test_is_procedure_called_in_code()
+		test_get_called_functions()
 	
 
 
