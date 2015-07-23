@@ -30,8 +30,6 @@ def access_chains_with_block_dict(chain, block_dict):
 	return chain_list
 
 
-
-
 def access_chains_with_level(procedure_name, level, block_dict):
 	level = int(level)
 	chains = access_chains_with_block_dict([procedure_name], block_dict)
@@ -51,6 +49,12 @@ def read_tnsdl_file(file_name):
 	with open(file_name, 'r') as f:
 		text = f.read()
 	return text
+
+
+
+
+
+
 
 if __name__ == '__main__':
 	import unittest
@@ -72,12 +76,12 @@ if __name__ == '__main__':
 	def test():		
 		functions = try_to_get_functions('rezha1qx.sdl')
 		if not functions: return
-		#print functions['procedures'].keys()
-		#print functions['inputs'].keys()
+		print_list(functions['procedures'].keys())
+		print_list(functions['inputs'].keys())
 		print len(functions['procedures']), len(functions['inputs'])
 		#print access_chains_with_block_dict(['send_cell_barred__r'], functions['procedures'])
-		chains = access_chains_with_level('send_cell_barred__r', 3, functions['procedures'])
-		print_list(chains)
+		#chains = access_chains_with_level('send_cell_barred__r', 3, functions['procedures'])
+		#print_list(chains)
 		#chains = [['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_fail__r'], ['send_cell_barred__r', 'request_inact_sib_fail__r', 'hdl_hs_cch_ready__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'handle_rez_cell_shd__r'], ['send_cell_barred__r', 'perform_cell_shutdown__r', 'check_scen_after_hspa_rem__r']]
 		#print expend_chains_one_more_level(chains, functions)
 
@@ -102,19 +106,41 @@ if __name__ == '__main__':
 		save_data.save_to_file(functions, data_file_name)
 		return functions
 
+
+	def print_function_with_count(function_dict):
+		for name, code in function_dict.items():
+			lines = code.splitlines()
+			print '{name}{space}{count}'.format(name=name, count=len(lines), space=space_str(60-len(name)))
+
+	def space_str(count):
+		string = ''
+		for i in xrange(count):
+			string += ' '
+		return string
+
 	def print_list(a_list):
 		print '[' 
 		for item in a_list:
 			print item
 		print ']'
 
-
-	def main():
-		file_name = 'rezha1qx.sdl'
-		proc_name = 'send_cell_barred__r'
+	def show_chains(file_name, proc_name):
 		level = 5
 		chains = access_chains(proc_name, level, file_name)
 		print_list(chains)
+
+	def show_functions(file_name):	
+		functions = try_to_get_functions(file_name)
+		print_function_with_count(functions['procedures'])
+		print '\n\n'
+		print_function_with_count(functions['inputs'])
+
+
+	def main():
+		file_name = 'rezha1qx.sdl'
+		proc_name = 'init_wcel_data__r'
+		#show_chains(file_name, proc_name)
+		show_functions(file_name)
 
 
 
