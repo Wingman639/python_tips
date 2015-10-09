@@ -23,7 +23,7 @@ def get_children_of_folder(dir_path):
 
 def operate(source, distination):
 	shutil.move(source, distination)
-	print 'move %s to %s' % (source, distination)
+	print 'move: %s --> %s' % (source, distination)
 
 
 def merge_files(source_folder_path, distination_folder_path, files):
@@ -35,7 +35,7 @@ def merge_files(source_folder_path, distination_folder_path, files):
 
 def merge_a_file(source_path, distination_path):
 	if os.path.exists(distination_path): 
-		print '%s already exists, skip.' % distination_path
+		print 'skip: %s' % distination_path
 		return
 	operate(source_path, distination_path)
 
