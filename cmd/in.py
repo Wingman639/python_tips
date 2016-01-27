@@ -1,4 +1,4 @@
 
 print 'start...'
-text = raw_input('[y/n]')
-text = raw_input('[yes/no]')
+print raw_input('[y/n]')
+print raw_input('[yes/no]')
