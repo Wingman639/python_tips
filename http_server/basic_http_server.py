@@ -1,4 +1,4 @@
-#encoding=utf-8
+#-*-coding:UTF-8-*-
 '''
 基于BaseHTTPServer的http server实现，包括get，post方法，get参数接收，post参数接收。
 '''
@@ -42,3 +42,15 @@ if __name__ == '__main__':
     def main():
         start_server('127.0.0.1', 8000)
     main()
+
+'''
+BaseHTTPRequestHandler
+
+['MessageClass', '__doc__', '__init__', '__module__', 'address_string', 'client_address', 'close_connection',
+'command', 'connection', 'date_time_string', 'default_request_version', 'disable_nagle_algorithm',
+'do_GET', 'do_POST', 'end_headers', 'error_content_type', 'error_message_format', 'finish', 'handle',
+'handle_one_request', 'headers', 'log_date_time_string', 'log_error', 'log_message', 'log_request', 'monthname',
+'parse_request', 'path', 'protocol_version', 'raw_requestline', 'rbufsize', 'request', 'request_version',
+'requestline', 'responses', 'rfile', 'send_error', 'send_header', 'send_response', 'server', 'server_version',
+'setup', 'sys_version', 'timeout', 'version_string', 'wbufsize', 'weekdayname', 'wfile']
+'''
