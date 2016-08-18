@@ -34,7 +34,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         shutil.copyfileobj(f, self.wfile)
 
 def start_server(ip, port):
-    print 'server (%s, %s) start...' % (ip, str(port))
+    print 'server (%s, %s) start...(Ctrl+C to stop)' % (ip, str(port))
     http_server = HTTPServer((ip, int(port)), MyRequestHandler)
     http_server.serve_forever() #设置一直监听并接收请求
 
