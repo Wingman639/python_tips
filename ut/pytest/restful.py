@@ -12,3 +12,10 @@ class RESTfulClient(object):
         return requests.delete(url, headers=headers)
 
 
+
+if __name__ == '__main__':
+    r = RESTfulClient().get('http://bing.com')
+    print r.status_code, len(r.text), r.text[:100]
+
+    r = RESTfulClient().post('http://bing.com', payload=None)
+    print r.status_code, len(r.text)
