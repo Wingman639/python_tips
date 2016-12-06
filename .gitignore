@@ -3,6 +3,10 @@
 *.txt
 *.cap
 *.log
+*.zip
+
+# temp folder
+temp/
 
 
 # Byte-compiled / optimized / DLL files
