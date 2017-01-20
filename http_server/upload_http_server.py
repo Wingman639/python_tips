@@ -51,22 +51,24 @@ class RequestHandler(BaseHTTPRequestHandler):
         line = self.rfile.readline()
         print line
         remainbytes -= len(line)
-        fn = re.findall(r'Content-Disposition.*name="file|content"; filename="(.*)"', line)
+        # fn = re.findall(r'Content-Disposition:[\w\-\;\s]*?name="file|content"; filename="(.*)"', line)
+        fn = re.findall(r'Content-Disposition:[\w\-\;\s\"\=]*? filename="(.*)"', line)
         print fn
         if not fn:
             return (False, "Can't find out file name...")
-        path = self.translate_path(self.path)
-        print path
-        osType = platform.system()
-        try:
-            if osType == "Linux":
-                fn = os.path.join(path, fn[0].decode('gbk').encode('utf-8'))
-            else:
-                fn = os.path.join(path, fn[0])
-        except Exception, e:
-            return (False, "Only ASCII file name is supported.")
-        while os.path.exists(fn):
-            fn += "_"
+        # path = self.translate_path(self.path)
+        # print path
+        # osType = platform.system()
+        # try:
+        #     if osType == "Linux":
+        #         fn = os.path.join(path, fn[0].decode('gbk').encode('utf-8'))
+        #     else:
+        #         fn = os.path.join(path, fn[0])
+        # except Exception, e:
+        #     return (False, "Only ASCII file name is supported.")
+        # while os.path.exists(fn):
+        #     fn += "_"
+        fn = fn[0]
         line = self.rfile.readline()
         remainbytes -= len(line)
         line = self.rfile.readline()
@@ -123,7 +125,7 @@ def http_server(ip, port):
 if __name__ == '__main__':
     import time
     ip = '127.0.0.1'
-    port = 8000
+    port = 8083
 
     def test():
         print 'Server start %s:%d...(you can stop it with Ctrl+C)' %(ip, port)
